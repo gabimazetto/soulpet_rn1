@@ -14,6 +14,30 @@ const Endereco = require("./database/endereco");
 
 
 // Definição de rotas
+app.get("/clientes", async (req, res) => {
+    // SELECT * FROM clientes;
+    const listaClientes = await Cliente.findAll();
+    res.json(listaClientes);
+});
+
+// "/clientes/5", por exemplo
+app.get("/clientes/:id", async (req, res) => {
+    // SELECT * FROM clientes WHERE id = 5
+    const cliente = await Cliente.findOne({ 
+        where: {id: req.params.id }, 
+        include: [Endereco] // traz o endereço do cliente junto
+});
+    if(cliente) {
+        res.json(cliente);
+    } else {
+        res.status(404).json({ message: "Cliente não encontrado!"});
+    }
+});
+
+
+
+
+
 app.post("/clientes", async (req, res) => {
     // - coletar informações do req.body
     const { nome, email, telefone, endereco } = req.body;
