@@ -53,6 +53,7 @@ app.get("/pets/:id", async (req, res) => {
     }
 });
 
+
 // ADICIONAR CLIENTES
 app.post("/clientes", async (req, res) => {
     // - coletar informações do req.body
@@ -134,6 +135,20 @@ app.delete("/clientes/:id", async (req, res) => {
         res.status(500).json({ message: "Um erro aconteceu." });
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //Escuta deventos (listen)
