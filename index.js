@@ -28,7 +28,7 @@ app.get("/pets", async (req, res) => {
     res.json(listaPets);
 });
 
-// DETALHES CLIENTES"/clientes/5", por exemplo
+// DETALHES CLIENTES "/clientes/5", por exemplo
 app.get("/clientes/:id", async (req, res) => {
     // SELECT * FROM clientes WHERE id = 5
     const cliente = await Cliente.findOne({ 
@@ -39,6 +39,17 @@ app.get("/clientes/:id", async (req, res) => {
         res.json(cliente);
     } else {
         res.status(404).json({ message: "Cliente não encontrado!"});
+    }
+});
+
+// DETALHES PETS "/pets/5", por exemplo
+app.get("/pets/:id", async (req, res) => {
+    const { id } = req.params;
+    const pet = await Pet.findByPk(id);
+    if(pet) {
+        res.json(pet);
+    }else {
+        res.status(404).json({ message: "Pet não encontrado" });
     }
 });
 
@@ -123,20 +134,6 @@ app.delete("/clientes/:id", async (req, res) => {
         res.status(500).json({ message: "Um erro aconteceu." });
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //Escuta deventos (listen)
