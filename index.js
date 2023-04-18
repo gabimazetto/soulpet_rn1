@@ -11,17 +11,24 @@ const { connection, authenticate } = require("./database/database");
 authenticate(connection); // efetivar a conexão 
 const Cliente = require("./database/cliente"); // Configurar o model da aplicação
 const Endereco = require("./database/endereco");
-
+const Pet = require("./database/pet")
 
 // Definição de rotas //
 
+// LISTAR CLIENTES
 app.get("/clientes", async (req, res) => {
     // SELECT * FROM clientes;
     const listaClientes = await Cliente.findAll();
     res.json(listaClientes);
 });
 
-// "/clientes/5", por exemplo
+// LISTAR PETS
+app.get("/pets", async (req, res) => {
+    const listaPets = await Pet.findAll();
+    res.json(listaPets);
+});
+
+// DETALHES CLIENTES"/clientes/5", por exemplo
 app.get("/clientes/:id", async (req, res) => {
     // SELECT * FROM clientes WHERE id = 5
     const cliente = await Cliente.findOne({ 
@@ -35,7 +42,7 @@ app.get("/clientes/:id", async (req, res) => {
     }
 });
 
-
+// ADICIONAR CLIENTES
 app.post("/clientes", async (req, res) => {
     // - coletar informações do req.body
     const { nome, email, telefone, endereco } = req.body;
@@ -47,6 +54,25 @@ app.post("/clientes", async (req, res) => {
         );
         res.status(201).json(novo);
     } catch(err) {
+        console.log(err);
+        res.status(500).json({ message: "Um erro aconteceu!" });
+    }
+});
+
+// ADICIONAR PETS
+app.post("/pets", async (req, res) => {
+    const { nome, tipo, porte, dataNasc, clienteId } = req.body;
+
+    try {
+        const cliente = await Cliente.findByPk(clienteId);
+        if(cliente){
+            const pet = await Pet.create({ nome, tipo, porte, dataNasc, clienteId });
+            res.status(201).json(pet);
+        } else {
+            res.status(404).json({ message: "Cliente não encontrado."});
+        }        
+    }
+    catch (err) {
         console.log(err);
         res.status(500).json({ message: "Um erro aconteceu!" });
     }
