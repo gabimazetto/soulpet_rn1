@@ -90,7 +90,7 @@ app.post("/pets", async (req, res) => {
     }
 });
 
-// Atualizar um cliente
+// ATUALIZAR UM CLIENTE
 app.put("/clientes/:id", async (req, res) => {
     // obter dados do corpo da requisição
     const { nome, email, telefone, endereco } = req.body;
@@ -117,7 +117,38 @@ app.put("/clientes/:id", async (req, res) => {
     }
 });
 
-// excluir o cliente
+// ATUALIZAR UM PET
+app.put("/pets/:id", async (req, res) => {
+    // Esses são os dados que virão no corpo JSON (que serão possíveis de alterar);
+    const { nome, tipo, porte , dataNasc} = req.body;
+
+    // É necessário checar a existência do pet. 
+    // SELECT * FROM pets WHERE id = "req.params.id";
+    const pet = await Pet.findByPk(req.params.id);
+
+    // se pet é null => não existe pet com o id
+    try {
+        if(pet) {
+            // IMPORTANTE Indicar qual pet  ser atualizado
+            // 1º Argumento: Dados novos; 2º Argumento> Where
+            await Pet.update(
+                { nome, tipo, porte, dataNasc }, 
+                { where: { id: req.params.id } } // WHERE id = "req.params.id"
+            );
+            res.json({ message: "Pet atualizado com sucesso." });
+        } else {
+            // caso o id seja inválido, a resposta ao cliente será essa 
+            res.status(404).json({ message: "Pet não encontrado" });
+        }
+    } catch {
+        console.log(err);
+        // caso aconteça algum erro inesperado, a resposta ao cliente será essa (falha na conexão com o banco de dados, por exemplo).
+        res.status(500).json({ message: "Um erro aconteceu." });
+    }
+});
+
+
+// EXCLUIR UM CLIENTE
 app.delete("/clientes/:id", async (req, res) => {
     const { id } = req.params;
     const cliente = await Cliente.findOne({ where: { id } });
@@ -136,7 +167,24 @@ app.delete("/clientes/:id", async (req, res) => {
     }
 });
 
+// EXCLUIR UM PET
+app.delete("/pets/:id", async (req, res) => {
+    // Precisamos checar se o pet existe antes de apagar
+    const pet = await Pet.findByPk(req.params.id);
 
+    try {
+        if(pet) {
+            // pet existe, podemos apagar
+            await pet.destroy();
+            res.json({ message: "Pet removido com sucesso." });
+        } else {
+            res.status(404).json({ message: "Pet não encontrado." });
+        }
+    } catch {
+        console.log(err);
+        res.status(500).json({ message: "Um erro aconteceu." });
+    } 
+});
 
 
 
