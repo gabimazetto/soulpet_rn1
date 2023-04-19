@@ -21,7 +21,7 @@ const Pet = connection.define("pet", {
 });
 
 // Relacionamento 1:N (Um cliente pode ter N pets);
-Cliente.hasMany(Pet);
+Cliente.hasMany(Pet, { onDelete: "CASCADE" }); // CASCADE = quando o cliente for deletado, TODOS os pets serão deletados;
 // Um pet pertence a um cliente
 Pet.belongsTo(Cliente);
 
